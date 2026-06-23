@@ -51,11 +51,22 @@ export function CodeRefPanel({
       el.setAttribute("data-active", isActive ? "true" : "false");
       if (isActive && !firstActive) firstActive = el;
     });
+    // Scroll the active line into view WITHIN the panel's own scroll container
+    // only — never via scrollIntoView, which would scroll the whole window and
+    // make the viewport jump as the user steps through.
     if (firstActive && open) {
-      (firstActive as HTMLElement).scrollIntoView({
-        block: "nearest",
-        behavior: "smooth",
-      });
+      const el = firstActive as HTMLElement;
+      const cRect = root.getBoundingClientRect();
+      const eRect = el.getBoundingClientRect();
+      const margin = 8;
+      if (eRect.top < cRect.top + margin) {
+        root.scrollBy({ top: eRect.top - cRect.top - margin, behavior: "smooth" });
+      } else if (eRect.bottom > cRect.bottom - margin) {
+        root.scrollBy({
+          top: eRect.bottom - cRect.bottom + margin,
+          behavior: "smooth",
+        });
+      }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeKey, open]);
