@@ -209,7 +209,7 @@ Pre-built variants (`mythos_1b` … `mythos_1t`) map these to realistic scale ta
 - **Scale selector:** updates all other pages' default config
 - **Log-scale toggle** for parameter counts (1B → 1T)
 
-**Data source:** Hardcode variant specs from `open_mythos/variants.py` as JSON at build time (script or manual sync).
+**Data source:** Hand-authored `src/lib/variants.ts` — values copied from `open_mythos/variants.py` (no build script; update manually when variants change).
 
 ---
 
@@ -223,6 +223,63 @@ Pre-built variants (`mythos_1b` … `mythos_1t`) map these to realistic scale ta
 - **DeepSeek MoE gate:** shared + routed experts with balance loss
 
 Clearly label as **experimental / alternative** to avoid conflating with core OpenMythos.
+
+---
+
+### 3.10 Source Code Integration (cross-cutting — every deep-dive page)
+
+**Concept:** Every interactive section is paired with the *actual implementation* in this repo. When a user explores a mechanism visually, they can open the corresponding source inline — no context switch to GitHub required for reading, but links go to the real file + line range.
+
+**Instruction for implementers:**
+
+1. **Maintain a code-ref manifest** at `src/lib/code-refs.ts` — a typed map from topic keys to `{ file, startLine, endLine, label, highlightLines? }`. Single source of truth; pages import by key (e.g. `codeRefs.recurrentLoop`).
+
+2. **Build a `<CodeRefPanel>` component** used on every route in §2 (except landing/references):
+   - Collapsible panel below or beside the visualization (default: collapsed on mobile, peek-open on desktop)
+   - Syntax-highlighted snippet fetched or inlined from manifest
+   - Header: `open_mythos/main.py` · lines 857–883 · `RecurrentBlock.forward`
+   - **“Open in repo”** link: `https://github.com/<org>/OpenMythos/blob/main/<file>#L<start>-L<end>`
+   - **Highlight sync:** when the loop stepper is on step 5, underline the matching lines in the snippet (e.g. `LTIInjection` call)
+
+3. **Wire highlights to interaction state** where possible:
+   | Page | User action | Snippet highlight |
+   |------|-------------|-------------------|
+   | `/recurrent-loop` | Loop step `t` | `loop_index_embedding` → `TransformerBlock` → `lora` → `injection` → `act` lines |
+   | `/stability` | Slider moves `log_A` | `LTIInjection.get_A()` |
+   | `/attention` | Toggle MLA/GQA | respective `forward()` bodies |
+   | `/moe` | Token selected | `MoEFFN.forward` router + dispatch loop |
+   | `/architecture` | Stage clicked | `OpenMythos.forward` stage block |
+
+4. **Do not duplicate logic in prose** — the snippet is authoritative; UI copy explains *what to look for* in the highlighted lines.
+
+5. **Keep line numbers current:** when `open_mythos/main.py` changes, update `code-refs.ts` only (no codegen pipeline).
+
+**Manifest seed (implement first):**
+
+| Key | File | Lines |
+|-----|------|-------|
+| `forward` | `open_mythos/main.py` | 992–1034 |
+| `recurrentLoop` | `open_mythos/main.py` | 857–891 |
+| `ltiInjection` | `open_mythos/main.py` | 684–742 |
+| `actHalting` | `open_mythos/main.py` | 750–780, 865–883 |
+| `loopEmbedding` | `open_mythos/main.py` | 541–570 |
+| `loraAdapter` | `open_mythos/main.py` | 578–619 |
+| `moeFfn` | `open_mythos/main.py` | 456–533 |
+| `mlaAttention` | `open_mythos/main.py` | 284–418 |
+| `gqaAttention` | `open_mythos/main.py` | 177–276 |
+| `variants` | `open_mythos/variants.py` | full file |
+| `modaAttention` | `open_mythos/moda.py` | 671–814 |
+
+---
+
+### 3.11 Standard Transformer Comparison (`/architecture`)
+
+**Concept:** Toggle that overlays a “vanilla stacked transformer” baseline next to the RDT pipeline — same `dim` and approximate param budget, but unique layers instead of loops.
+
+**Interactions:**
+- **Toggle:** “Compare to standard transformer” — swaps recurrent column for a stack of `N` unique blocks
+- **Callouts:** parameter count (shared weights vs `N` unique), no `e` injection, no ACT, no depth extrapolation
+- **CodeRefPanel:** `OpenMythos.forward` vs a short illustrative pseudo-stack comment block
 
 ---
 
@@ -251,10 +308,7 @@ visualizer/
 ├── tsconfig.json
 ├── public/
 │   └── data/
-│       ├── variants.json      # synced from variants.py
 │       └── demo-trajectories.json
-├── scripts/
-│   └── sync-variants.ts       # optional: parse Python → JSON at build
 └── src/
     ├── app/
     │   ├── layout.tsx
@@ -275,13 +329,14 @@ visualizer/
     │   ├── attention/         # MLA/GQA panes
     │   ├── moe/               # Expert grid, router heatmap
     │   ├── stability/         # ρ(A) gauge, phase plot
-    │   └── shared/            # ConfigPanel, FormulaBlock, TokenStrip
+    │   └── shared/            # ConfigPanel, FormulaBlock, TokenStrip, CodeRefPanel
     ├── lib/
     │   ├── config.ts          # MythosConfig types + defaults
+    │   ├── code-refs.ts       # Topic → file:line manifest (§3.10)
     │   ├── lti.ts             # Port of LTIInjection math
     │   ├── act.ts             # ACT simulation
     │   ├── loop-embedding.ts  # loop_index_embedding
-    │   └── variants.ts        # Load variants.json
+    │   └── variants.ts        # Hand-authored mythos_1b … mythos_1t specs
     └── styles/
         └── globals.css
 ```
@@ -291,8 +346,8 @@ visualizer/
 - **Root directory:** `visualizer/` (set in Vercel project settings)
 - **Framework preset:** Next.js (auto-detected)
 - **Build:** `npm run build` or `pnpm build`
-- **No Python runtime required** for v1 — all interactions use client-side math + static JSON
-- **Optional Phase 2:** Vercel Serverless Function that imports a pre-exported ρ(A) or runs a WASM PyTorch micro-model (likely overkill for v1)
+- **No Python runtime on Vercel** — interactivity uses client-side TypeScript ports of the math
+- **ρ(A) verification:** document a one-liner in `/stability` for local dev (`model.recurrent.injection.get_A()`) so readers can confirm the gauge matches a real init; values in the UI remain computed in TS from the same formulas as `LTIInjection.get_A()`
 
 ### 4.4 Monorepo Integration
 
@@ -321,7 +376,7 @@ visualizer/
 
 | Visualization | Data source |
 |---------------|-------------|
-| Architecture labels | `variants.json` from `variants.py` |
+| Architecture labels | `src/lib/variants.ts` (hand-maintained from `variants.py`) |
 | LTI ρ(A), trajectories | TypeScript port of `LTIInjection` formulas |
 | ACT halting | Simulated per-token probabilities (seeded PRNG, labeled "illustrative") |
 | MoE routing | Simulated softmax scores; patterns tuned to look realistic |
@@ -337,59 +392,38 @@ visualizer/
 ### Phase 0 — Scaffold (current)
 - [x] Codebase analysis
 - [x] `PLAN.md`
-- [ ] Next.js init, Tailwind, shadcn, base layout + nav
 
 ### Phase 1 — Core narrative
-- [ ] Landing page + `/architecture` pipeline
-- [ ] `/recurrent-loop` with loop stepper + formula highlight
+- [ ] Next.js init, Tailwind, shadcn, base layout + nav
+- [ ] `src/lib/code-refs.ts` manifest + `<CodeRefPanel>` component (§3.10)
+- [ ] Landing page + `/architecture` pipeline (include standard-transformer compare toggle, §3.11)
+- [ ] `/recurrent-loop` with loop stepper, formula highlight, and step-synced snippet highlights
 - [ ] Config panel wired to URL params
-- [ ] `variants.json` + `/variants` page
+- [ ] `src/lib/variants.ts` + `/variants` page
 
 ### Phase 2 — Distinctive mechanics
-- [ ] `/stability` LTI lab
+- [ ] `/stability` LTI lab (+ CodeRefPanel for `LTIInjection`, local ρ(A) verify note)
 - [ ] ACT halting integrated in recurrent view
 - [ ] `/attention` MLA vs GQA
 - [ ] `/moe` router
 
-### Phase 3 — Polish & deploy
-- [ ] `/depth-extrapolation`, `/references`, `/moda`
+### Phase 3 — Complete & deploy
+- [ ] `/depth-extrapolation`, `/references`, `/moda` (each with CodeRefPanel)
+- [ ] CodeRef highlight sync on all interactive pages (full table in §3.10)
 - [ ] Mobile layout, a11y pass
 - [ ] Vercel deploy + root README link
 - [ ] OG images / social preview
 
-### Phase 4 — Optional enhancements
-- [ ] Python build script to export real ρ(A) from random `OpenMythos` init
-- [ ] Embedded code snippets linking to `open_mythos/main.py` line ranges
-- [ ] "Compare to standard transformer" toggle on architecture page
-
 ---
 
-## 8. Key Code References (for implementers)
-
-| Topic | File | Lines (approx) |
-|-------|------|----------------|
-| Full forward pass | `open_mythos/main.py` | `OpenMythos.forward` ~992–1034 |
-| Recurrent loop | `open_mythos/main.py` | `RecurrentBlock.forward` ~825–891 |
-| LTI injection | `open_mythos/main.py` | `LTIInjection` ~684–742 |
-| ACT halting | `open_mythos/main.py` | `ACTHalting` + loop body ~865–883 |
-| Loop embedding | `open_mythos/main.py` | `loop_index_embedding` ~541–570 |
-| LoRA adapter | `open_mythos/main.py` | `LoRAAdapter` ~578–619 |
-| MoE FFN | `open_mythos/main.py` | `MoEFFN` ~456–533 |
-| MLA attention | `open_mythos/main.py` | `MLAttention` ~284–418 |
-| GQA attention | `open_mythos/main.py` | `GQAttention` ~177–276 |
-| Variants | `open_mythos/variants.py` | `mythos_1b` … `mythos_1t` |
-| MoDA (alt) | `open_mythos/moda.py` | `MoDAModel`, `MoDAAttention` |
-| API docs | `docs/open_mythos.md` | Full reference |
-
----
-
-## 9. Open Questions / Decisions
+## 8. Open Questions / Decisions
 
 1. **Monorepo vs separate deploy:** Keep `visualizer/` in-repo (recommended) — single clone, Vercel root dir override.
-2. **Live PyTorch inference:** Defer to Phase 4; client-only keeps deploy simple and fast.
+2. **Live PyTorch on Vercel:** No — TS ports for math; snippets + local verify one-liner for ρ(A).
 3. **MoDA prominence:** Secondary track — core brand is RDT (Prelude/Recurrent/Coda), not MoDA.
-4. **Variant sync:** Manual JSON vs build-time Python script — start manual, automate when variants stabilize.
-5. **3D vs 2D:** 2D diagrams first; optional Three.js latent-space trajectory only if Phase 3 has bandwidth.
+4. **Variant data:** Hand-maintained `variants.ts` — no build script.
+5. **3D vs 2D:** 2D diagrams only.
+6. **Snippet freshness:** `code-refs.ts` updated manually when Python line numbers shift.
 
 ---
 
@@ -403,8 +437,10 @@ When complete, a visitor should be able to:
 4. **Compare** MLA vs GQA KV cache tradeoffs
 5. **Explore** how MoE routing differs per loop iteration
 6. **Adjust** `n_loops` and grasp depth extrapolation vs overthinking
-7. **Deploy** by connecting the repo to Vercel with `visualizer` as root — no extra setup
+7. **Read** the implementation inline — synced highlights on every deep-dive page (§3.10)
+8. **Compare** RDT vs a standard stacked transformer on `/architecture`
+9. **Deploy** by connecting the repo to Vercel with `visualizer` as root — no extra setup
 
 ---
 
-*Last updated: planning phase — scaffold and Phase 1 implementation next.*
+*Last updated: planning phase — Phase 1 scaffold + CodeRefPanel next.*
