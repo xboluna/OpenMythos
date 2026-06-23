@@ -7,11 +7,11 @@ import {
   Line,
   LineChart,
   ReferenceLine,
-  ResponsiveContainer,
   Tooltip,
   XAxis,
   YAxis,
 } from "recharts";
+import { ResponsiveChart } from "@/components/shared/responsive-chart";
 import { simulateTrajectory } from "@/lib/lti";
 import { Slider } from "@/components/ui/slider";
 import { Badge } from "@/components/ui/badge";
@@ -126,7 +126,7 @@ export function ComparisonChart({
       </div>
 
       <div className="h-[280px] w-full">
-        <ResponsiveContainer width="100%" height="100%">
+        <ResponsiveChart width="100%" height="100%">
           <LineChart
             data={data}
             margin={{ top: 8, right: 16, bottom: 4, left: 4 }}
@@ -182,7 +182,7 @@ export function ComparisonChart({
               connectNulls
             />
           </LineChart>
-        </ResponsiveContainer>
+        </ResponsiveChart>
       </div>
 
       <div className="flex flex-wrap items-center gap-x-5 gap-y-1.5 text-xs text-muted-foreground">

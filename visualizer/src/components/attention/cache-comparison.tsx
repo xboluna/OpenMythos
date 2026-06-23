@@ -6,10 +6,10 @@ import {
   BarChart,
   Cell,
   LabelList,
-  ResponsiveContainer,
   XAxis,
   YAxis,
 } from "recharts";
+import { ResponsiveChart } from "@/components/shared/responsive-chart";
 import type { AttnType, MythosConfig } from "@/lib/config";
 import { kvCachePerToken } from "@/lib/config";
 import { Slider } from "@/components/ui/slider";
@@ -106,7 +106,7 @@ export function CacheComparison({
       </div>
 
       <div className="h-[200px] w-full">
-        <ResponsiveContainer width="100%" height="100%">
+        <ResponsiveChart width="100%" height="100%">
           <BarChart
             layout="vertical"
             data={data}
@@ -148,7 +148,7 @@ export function CacheComparison({
               />
             </Bar>
           </BarChart>
-        </ResponsiveContainer>
+        </ResponsiveChart>
       </div>
 
       <div className="space-y-2">

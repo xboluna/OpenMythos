@@ -1,7 +1,8 @@
 "use client";
 
 import * as React from "react";
-import { Bar, BarChart, Cell, ResponsiveContainer, XAxis, YAxis } from "recharts";
+import { Bar, BarChart, Cell, XAxis, YAxis } from "recharts";
+import { ResponsiveChart } from "@/components/shared/responsive-chart";
 import { AlertTriangle, Scale } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
@@ -105,7 +106,7 @@ export function LoadBalance({
           biasOn ? "on" : "off"
         }. Gini coefficient ${currentGini.toFixed(3)}.`}
       >
-        <ResponsiveContainer width="100%" height="100%">
+        <ResponsiveChart width="100%" height="100%">
           <BarChart data={data} margin={{ top: 6, right: 6, bottom: 4, left: 0 }}>
             <XAxis dataKey="name" hide />
             <YAxis
@@ -127,7 +128,7 @@ export function LoadBalance({
               })}
             </Bar>
           </BarChart>
-        </ResponsiveContainer>
+        </ResponsiveChart>
       </div>
 
       <p className="text-[11px] text-muted-foreground">

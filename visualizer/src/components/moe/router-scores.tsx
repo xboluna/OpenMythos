@@ -5,10 +5,10 @@ import {
   Bar,
   BarChart,
   Cell,
-  ResponsiveContainer,
   XAxis,
   YAxis,
 } from "recharts";
+import { ResponsiveChart } from "@/components/shared/responsive-chart";
 import { ROUTED_COLOR } from "./routing";
 import { Formula } from "@/components/shared/formula-block";
 
@@ -61,7 +61,7 @@ export function RouterScores({
           </span>
         </div>
         <div className="h-[220px] w-full">
-          <ResponsiveContainer width="100%" height="100%">
+          <ResponsiveChart width="100%" height="100%">
             <BarChart
               data={chartData}
               margin={{ top: 6, right: 8, bottom: 4, left: 0 }}
@@ -94,7 +94,7 @@ export function RouterScores({
                 ))}
               </Bar>
             </BarChart>
-          </ResponsiveContainer>
+          </ResponsiveChart>
         </div>
         <p className="text-[11px] text-muted-foreground">
           <Formula math="\text{scores} = \mathrm{softmax}(\text{logits})" /> —

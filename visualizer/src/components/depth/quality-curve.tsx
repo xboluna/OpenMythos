@@ -9,11 +9,11 @@ import {
   ReferenceArea,
   ReferenceDot,
   ReferenceLine,
-  ResponsiveContainer,
   Tooltip,
   XAxis,
   YAxis,
 } from "recharts";
+import { ResponsiveChart } from "@/components/shared/responsive-chart";
 import type { DepthModel, DepthPoint } from "./lib";
 import { overthinkStart, quality, sampleCurve } from "./lib";
 
@@ -39,7 +39,7 @@ export function QualityCurve({
   return (
     <div className="space-y-3">
       <div className="h-[340px] w-full">
-        <ResponsiveContainer width="100%" height="100%">
+        <ResponsiveChart width="100%" height="100%">
           <ComposedChart
             data={data}
             margin={{ top: 16, right: 20, bottom: 16, left: 4 }}
@@ -183,7 +183,7 @@ export function QualityCurve({
               strokeWidth={2}
             />
           </ComposedChart>
-        </ResponsiveContainer>
+        </ResponsiveChart>
       </div>
 
       <div className="flex flex-wrap items-center gap-x-5 gap-y-1.5 text-xs text-muted-foreground">

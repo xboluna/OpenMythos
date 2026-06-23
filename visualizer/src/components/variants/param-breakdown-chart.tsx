@@ -6,11 +6,11 @@ import {
   BarChart,
   CartesianGrid,
   Cell,
-  ResponsiveContainer,
   Tooltip,
   XAxis,
   YAxis,
 } from "recharts";
+import { ResponsiveChart } from "@/components/shared/responsive-chart";
 import {
   VARIANTS,
   estimateParams,
@@ -72,7 +72,7 @@ export function ParamBreakdownChart({
       </div>
 
       <div className="h-[360px] w-full">
-        <ResponsiveContainer width="100%" height="100%">
+        <ResponsiveChart width="100%" height="100%">
           <BarChart
             data={CHART_DATA}
             margin={{ top: 8, right: 8, bottom: 4, left: 8 }}
@@ -143,7 +143,7 @@ export function ParamBreakdownChart({
               ))
             )}
           </BarChart>
-        </ResponsiveContainer>
+        </ResponsiveChart>
       </div>
 
       <Legend logScale={logScale} />

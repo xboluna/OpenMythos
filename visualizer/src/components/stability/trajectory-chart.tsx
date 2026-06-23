@@ -6,11 +6,11 @@ import {
   Line,
   LineChart,
   ReferenceLine,
-  ResponsiveContainer,
   Tooltip,
   XAxis,
   YAxis,
 } from "recharts";
+import { ResponsiveChart } from "@/components/shared/responsive-chart";
 import { fixedPoint, simulateTrajectory } from "@/lib/lti";
 import { B_INIT, E_INPUT, H0, STEPS, formatNum } from "./constants";
 
@@ -42,7 +42,7 @@ export function TrajectoryChart({
   return (
     <div className="space-y-2">
       <div className="h-[260px] w-full">
-        <ResponsiveContainer width="100%" height="100%">
+        <ResponsiveChart width="100%" height="100%">
           <LineChart
             data={data}
             margin={{ top: 8, right: 16, bottom: 4, left: 4 }}
@@ -96,7 +96,7 @@ export function TrajectoryChart({
               isAnimationActive={!reduced}
             />
           </LineChart>
-        </ResponsiveContainer>
+        </ResponsiveChart>
       </div>
       <p className="text-xs text-muted-foreground">
         a = A_disc ={" "}

@@ -7,11 +7,11 @@ import {
   LineChart,
   ReferenceDot,
   ReferenceLine,
-  ResponsiveContainer,
   Tooltip,
   XAxis,
   YAxis,
 } from "recharts";
+import { ResponsiveChart } from "@/components/shared/responsive-chart";
 import { discreteA, sampleConstrainedRho } from "@/lib/lti";
 import { LOG_A_RANGE, formatNum } from "./constants";
 
@@ -42,7 +42,7 @@ export function RhoCurve({
   return (
     <div className="space-y-2">
       <div className="h-[240px] w-full">
-        <ResponsiveContainer width="100%" height="100%">
+        <ResponsiveChart width="100%" height="100%">
           <LineChart
             data={data}
             margin={{ top: 8, right: 16, bottom: 4, left: 4 }}
@@ -106,7 +106,7 @@ export function RhoCurve({
               strokeWidth={2}
             />
           </LineChart>
-        </ResponsiveContainer>
+        </ResponsiveChart>
       </div>
       <p className="text-xs text-muted-foreground">
         For log_dt = <span className="font-mono">{formatNum(logDt, 2)}</span>,
