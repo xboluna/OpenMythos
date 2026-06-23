@@ -177,6 +177,22 @@ Key design choices:
 
 ---
 
+## Visualizer
+
+An interactive, instructional website that explains the OpenMythos architecture lives in [`visualizer/`](visualizer/). It is a self-contained Next.js app — every visualization is computed client-side from the model's own formulas (TypeScript ports of `LTIInjection`, ACT halting, the loop-index embedding, MoE routing, and the variant parameter counts), and every deep-dive page links to the exact implementation in `open_mythos/` via a synced source panel.
+
+Pages cover the full pipeline (Prelude → Recurrent → Coda), the recurrent loop, MLA vs GQA attention, MoE routing, LTI stability (ρ(A) < 1), depth extrapolation, the model variants, and the experimental MoDA track.
+
+```bash
+cd visualizer
+npm install
+npm run dev        # http://localhost:3000
+```
+
+**Deploy to Vercel:** connect the repo and set the project **Root Directory** to `visualizer/` — the Next.js framework preset is auto-detected, no extra configuration required. See [`visualizer/README.md`](visualizer/README.md) for details (including how to refresh the embedded source snippets after editing `open_mythos/*.py`).
+
+---
+
 ## The Central Hypothesis
 
 Claude Mythos is suspected to be a **Recurrent-Depth Transformer (RDT)** — also called a Looped Transformer (LT). Rather than stacking hundreds of unique layers, a subset of layers is recycled and run through multiple times per forward pass. Same weights. More loops. Deeper thinking.
