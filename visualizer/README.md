@@ -1,36 +1,46 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# OpenMythos Visualizer
 
-## Getting Started
+An interactive, instructional website that explains the **OpenMythos** Recurrent-Depth Transformer (RDT) architecture. Self-contained Next.js app, deployable to Vercel.
 
-First, run the development server:
+See [`PLAN.md`](PLAN.md) for the full design rationale.
+
+## Getting started
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
+npm run dev        # http://localhost:3000
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Other scripts:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+npm run build              # production build
+npm run lint               # eslint
+npm run extract-snippets   # regenerate embedded source snippets (see below)
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Stack
 
-## Learn More
+- **Next.js 16** (App Router) + **React 19** + **TypeScript**
+- **Tailwind CSS v4** + **shadcn/ui** (base-ui primitives) — dark "museum exhibit" theme
+- **motion** (Framer Motion) for animation, **Recharts** for charts, **KaTeX** for math
+- **nuqs** for URL-synced, shareable configuration (`?variant=&loops=&attn=`)
+- **Shiki** for build-time syntax highlighting of embedded source
 
-To learn more about Next.js, take a look at the following resources:
+## How it works
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Every numeric visualization is computed **client-side from the model's own formulas** — TypeScript ports in `src/lib/` (`lti.ts`, `act.ts`, `loop-embedding.ts`, `variants.ts`, `config.ts`) mirror the real implementations in `open_mythos/`. Nothing is measured from a trained checkpoint; values are labeled as illustrative simulations where synthesized.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### Source integration
+
+Each deep-dive page shows the **actual implementation** alongside the visualization, with synced line highlighting and a GitHub deep-link.
+
+- `src/lib/code-refs.json` — the single source of truth mapping topic keys → `{ file, startLine, endLine, symbol, label }` in `open_mythos/*.py`.
+- `scripts/extract-snippets.mjs` — slices those line ranges out of the Python source and Shiki-highlights them into `src/generated/code-snippets.json` (committed). This means the build has **no dependency on the Python package**.
+- `src/components/shared/code-ref-panel.tsx` — renders a snippet with collapse, GitHub link, and step-synced highlighting.
+
+When `open_mythos/*.py` changes and line numbers shift, update `src/lib/code-refs.json` and run `npm run extract-snippets`.
 
 ## Deploy on Vercel
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Connect the repository and set the project **Root Directory** to `visualizer/`. The Next.js framework preset is auto-detected; no extra configuration is required. The app is fully static (no server runtime needed).
