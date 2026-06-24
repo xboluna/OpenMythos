@@ -1,0 +1,124 @@
+{
+  "refs": [
+    {
+      "key": "forward",
+      "file": "open_mythos/main.py",
+      "startLine": 992,
+      "endLine": 1034,
+      "symbol": "OpenMythos.forward",
+      "label": "End-to-end forward pass (Prelude → Recurrent → Coda)"
+    },
+    {
+      "key": "recurrentLoop",
+      "file": "open_mythos/main.py",
+      "startLine": 825,
+      "endLine": 891,
+      "symbol": "RecurrentBlock.forward",
+      "label": "Recurrent loop with ACT early exit"
+    },
+    {
+      "key": "ltiInjection",
+      "file": "open_mythos/main.py",
+      "startLine": 684,
+      "endLine": 742,
+      "symbol": "LTIInjection",
+      "label": "Stable LTI input injection (Parcae)"
+    },
+    {
+      "key": "actHalting",
+      "file": "open_mythos/main.py",
+      "startLine": 750,
+      "endLine": 780,
+      "symbol": "ACTHalting",
+      "label": "Adaptive Computation Time halting"
+    },
+    {
+      "key": "loopEmbedding",
+      "file": "open_mythos/main.py",
+      "startLine": 541,
+      "endLine": 570,
+      "symbol": "loop_index_embedding",
+      "label": "Loop-index positional embedding"
+    },
+    {
+      "key": "loraAdapter",
+      "file": "open_mythos/main.py",
+      "startLine": 578,
+      "endLine": 624,
+      "symbol": "LoRAAdapter",
+      "label": "Depth-wise LoRA adapter"
+    },
+    {
+      "key": "moeFfn",
+      "file": "open_mythos/main.py",
+      "startLine": 456,
+      "endLine": 533,
+      "symbol": "MoEFFN",
+      "label": "Mixture-of-Experts FFN (routed + shared)"
+    },
+    {
+      "key": "mlaAttention",
+      "file": "open_mythos/main.py",
+      "startLine": 284,
+      "endLine": 418,
+      "symbol": "MLAttention",
+      "label": "Multi-Latent Attention (compressed KV cache)"
+    },
+    {
+      "key": "gqaAttention",
+      "file": "open_mythos/main.py",
+      "startLine": 177,
+      "endLine": 276,
+      "symbol": "GQAttention",
+      "label": "Grouped Query Attention"
+    },
+    {
+      "key": "transformerBlock",
+      "file": "open_mythos/main.py",
+      "startLine": 627,
+      "endLine": 676,
+      "symbol": "TransformerBlock",
+      "label": "Attention + FFN block (prelude/coda/recurrent)"
+    },
+    {
+      "key": "expert",
+      "file": "open_mythos/main.py",
+      "startLine": 426,
+      "endLine": 453,
+      "symbol": "Expert",
+      "label": "Single fine-grained expert FFN"
+    },
+    {
+      "key": "config",
+      "file": "open_mythos/main.py",
+      "startLine": 17,
+      "endLine": 81,
+      "symbol": "MythosConfig",
+      "label": "Model hyperparameter configuration"
+    },
+    {
+      "key": "variants",
+      "file": "open_mythos/variants.py",
+      "startLine": 1,
+      "endLine": 199,
+      "symbol": "variants",
+      "label": "Pre-configured model scales (1B → 1T)"
+    },
+    {
+      "key": "modaAttention",
+      "file": "open_mythos/moda.py",
+      "startLine": 671,
+      "endLine": 821,
+      "symbol": "MoDAttention",
+      "label": "MoDA depth-aware unified attention"
+    },
+    {
+      "key": "modaMoE",
+      "file": "open_mythos/moda.py",
+      "startLine": 452,
+      "endLine": 630,
+      "symbol": "MoDMoE",
+      "label": "MoDA DeepSeek-style MoE gate"
+    }
+  ]
+}
