@@ -39,3 +39,8 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# The repo-root .gitignore ignores any `lib/` directory (a Python venv rule).
+# That silently excluded this app's source library — re-include it here.
+!src/lib/
+!src/lib/**
