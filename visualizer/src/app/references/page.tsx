@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowUpRight, ExternalLink, FileText, GitFork, Info } from "lucide-react";
+import { ArrowUpRight, ExternalLink, FileText, Info } from "lucide-react";
 import { PageHeader } from "@/components/layout/page-header";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -18,7 +18,6 @@ import {
   bibtex,
   paperGroups,
   refToRoute,
-  repoUrl,
   threads,
 } from "@/components/references/data";
 
@@ -258,48 +257,6 @@ export default function ReferencesPage() {
               >
                 <code>{bibtex}</code>
               </pre>
-            </CardContent>
-          </Card>
-        </section>
-
-        <Separator />
-
-        {/* 6. Repository */}
-        <section className="space-y-6">
-          <SectionHeading
-            id="repository"
-            title="Repository"
-            description="The full OpenMythos implementation is open source."
-          />
-          <Card>
-            <CardContent className="flex flex-col items-start gap-4 sm:flex-row sm:items-center sm:justify-between">
-              <div className="flex items-center gap-3">
-                <GitFork className="size-5 shrink-0 text-muted-foreground" />
-                <div>
-                  <p className="text-sm font-medium text-foreground">
-                    xboluna/OpenMythos
-                  </p>
-                  <p className="font-mono text-xs text-muted-foreground">
-                    {repoUrl}
-                  </p>
-                </div>
-              </div>
-              <Button
-                variant="outline"
-                size="sm"
-                render={
-                  <a
-                    href={repoUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    aria-label="View the OpenMythos repository on GitHub"
-                  />
-                }
-              >
-                <GitFork className="size-4" />
-                View on GitHub
-                <ExternalLink className="size-3" />
-              </Button>
             </CardContent>
           </Card>
         </section>
