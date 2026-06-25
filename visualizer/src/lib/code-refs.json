@@ -1,4 +1,6 @@
 {
+  "repo": "xboluna/OpenMythos",
+  "branch": "main",
   "refs": [
     {
       "key": "forward",
@@ -6,7 +8,7 @@
       "startLine": 992,
       "endLine": 1034,
       "symbol": "OpenMythos.forward",
-      "label": "End-to-end forward pass (Prelude → Recurrent → Coda)"
+      "label": "Full forward pass: Prelude → Recurrent → Coda"
     },
     {
       "key": "recurrentLoop",
@@ -14,7 +16,7 @@
       "startLine": 825,
       "endLine": 891,
       "symbol": "RecurrentBlock.forward",
-      "label": "Recurrent loop with ACT early exit"
+      "label": "The recurrent loop with ACT early exit"
     },
     {
       "key": "ltiInjection",
@@ -22,7 +24,7 @@
       "startLine": 684,
       "endLine": 742,
       "symbol": "LTIInjection",
-      "label": "Stable LTI input injection (Parcae)"
+      "label": "Stable input injection — ρ(A) < 1 by construction"
     },
     {
       "key": "actHalting",
@@ -30,7 +32,7 @@
       "startLine": 750,
       "endLine": 780,
       "symbol": "ACTHalting",
-      "label": "Adaptive Computation Time halting"
+      "label": "Per-position halting probability head"
     },
     {
       "key": "loopEmbedding",
@@ -38,7 +40,7 @@
       "startLine": 541,
       "endLine": 570,
       "symbol": "loop_index_embedding",
-      "label": "Loop-index positional embedding"
+      "label": "Sinusoidal loop-index signal over recurrence depth"
     },
     {
       "key": "loraAdapter",
@@ -46,7 +48,7 @@
       "startLine": 578,
       "endLine": 624,
       "symbol": "LoRAAdapter",
-      "label": "Depth-wise LoRA adapter"
+      "label": "Depth-wise LoRA: per-loop low-rank delta"
     },
     {
       "key": "moeFfn",
@@ -54,7 +56,7 @@
       "startLine": 456,
       "endLine": 533,
       "symbol": "MoEFFN",
-      "label": "Mixture-of-Experts FFN (routed + shared)"
+      "label": "Fine-grained MoE: routed + shared experts"
     },
     {
       "key": "mlaAttention",
@@ -62,7 +64,7 @@
       "startLine": 284,
       "endLine": 418,
       "symbol": "MLAttention",
-      "label": "Multi-Latent Attention (compressed KV cache)"
+      "label": "Multi-Latent Attention with compressed KV cache"
     },
     {
       "key": "gqaAttention",
@@ -78,7 +80,7 @@
       "startLine": 627,
       "endLine": 676,
       "symbol": "TransformerBlock",
-      "label": "Attention + FFN block (prelude/coda/recurrent)"
+      "label": "Pre-norm block: attention + (MoE | dense) FFN"
     },
     {
       "key": "expert",
@@ -86,7 +88,7 @@
       "startLine": 426,
       "endLine": 453,
       "symbol": "Expert",
-      "label": "Single fine-grained expert FFN"
+      "label": "SwiGLU feed-forward expert"
     },
     {
       "key": "config",
@@ -94,7 +96,7 @@
       "startLine": 17,
       "endLine": 81,
       "symbol": "MythosConfig",
-      "label": "Model hyperparameter configuration"
+      "label": "Full configuration surface"
     },
     {
       "key": "variants",
@@ -102,23 +104,23 @@
       "startLine": 1,
       "endLine": 199,
       "symbol": "variants",
-      "label": "Pre-configured model scales (1B → 1T)"
+      "label": "Pre-configured scales 1B → 1T"
     },
     {
       "key": "modaAttention",
       "file": "open_mythos/moda.py",
       "startLine": 671,
       "endLine": 821,
-      "symbol": "MoDAttention",
-      "label": "MoDA depth-aware unified attention"
+      "symbol": "MoDAAttention",
+      "label": "Depth-aware unified attention (experimental)"
     },
     {
       "key": "modaMoE",
       "file": "open_mythos/moda.py",
       "startLine": 452,
       "endLine": 630,
-      "symbol": "MoDMoE",
-      "label": "MoDA DeepSeek-style MoE gate"
+      "symbol": "DeepSeekMoE",
+      "label": "DeepSeek-style MoE with shared experts (experimental)"
     }
   ]
 }

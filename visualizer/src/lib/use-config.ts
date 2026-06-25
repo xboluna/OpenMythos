@@ -1,59 +1,75 @@
 "use client";
 
+import * as React from "react";
 import {
   parseAsInteger,
   parseAsStringLiteral,
-  useQueryState,
+  useQueryStates,
 } from "nuqs";
 import type { AttnType, MythosConfig } from "./config";
-import {
-  VARIANT_IDS,
-  getVariant,
-  type VariantId,
-} from "./variants";
+import { VARIANTS, getVariant, type VariantId } from "./variants";
 
-const attnTypes = ["mla", "gqa"] as const;
+/**
+ * Shared, URL-synced model configuration (PLAN §4.1: "URL search params +
+ * Zustand"). The URL stays small — it stores only the selected variant plus a
+ * couple of overrides (loops, attention) — and every page derives the full
+ * `MythosConfig` from it. This makes configs shareable as links
+ * (e.g. ?variant=3b&loops=32&attn=gqa).
+ */
+
+const variantIds = VARIANTS.map((v) => v.id) as [VariantId, ...VariantId[]];
+const attnValues = ["mla", "gqa"] as const;
 
 export function useMythosConfig() {
-  const [variantId, setVariantId] = useQueryState(
-    "variant",
-    parseAsStringLiteral(VARIANT_IDS).withDefault("mythos_1b"),
+  const [state, setState] = useQueryStates(
+    {
+      variant: parseAsStringLiteral(variantIds).withDefault("1b"),
+      loops: parseAsInteger,
+      attn: parseAsStringLiteral(attnValues),
+    },
+    { history: "replace" },
   );
-  const [loops, setLoops] = useQueryState("loops", parseAsInteger);
-  const [attn, setAttn] = useQueryState(
-    "attn",
-    parseAsStringLiteral(attnTypes),
+
+  const variant = getVariant(state.variant);
+
+  const config: MythosConfig = React.useMemo(() => {
+    const base = { ...variant.config };
+    if (state.attn) base.attn_type = state.attn as AttnType;
+    if (state.loops && state.loops > 0) base.max_loop_iters = state.loops;
+    return base;
+  }, [variant, state.attn, state.loops]);
+
+  const setVariant = React.useCallback(
+    (id: VariantId) => setState({ variant: id }),
+    [setState],
   );
-
-  const variant = getVariant(variantId);
-  const config: MythosConfig = {
-    ...variant.config,
-    attn_type: (attn ?? variant.config.attn_type) as AttnType,
-  };
-
-  const effectiveLoops = loops ?? config.max_loop_iters;
-
-  const reset = () => {
-    void setVariantId(null);
-    void setLoops(null);
-    void setAttn(null);
-  };
+  const setLoops = React.useCallback(
+    (loops: number | null) => setState({ loops }),
+    [setState],
+  );
+  const setAttn = React.useCallback(
+    (attn: AttnType | null) => setState({ attn }),
+    [setState],
+  );
+  const reset = React.useCallback(
+    () => setState({ variant: "1b", loops: null, attn: null }),
+    [setState],
+  );
 
   return {
+    variantId: state.variant,
+    variant,
     config,
-    variantId: variant.id,
-    loops: effectiveLoops,
+    /** Effective loop depth (override or variant default). */
+    loops: config.max_loop_iters,
     attn: config.attn_type,
-    setVariant: (id: VariantId) => {
-      void setVariantId(id);
-      void setLoops(null);
-    },
-    setLoops: (n: number) => {
-      void setLoops(n);
-    },
-    setAttn: (next: AttnType) => {
-      void setAttn(next);
-    },
+    loopsOverride: state.loops,
+    attnOverride: state.attn as AttnType | null,
+    setVariant,
+    setLoops,
+    setAttn,
     reset,
   };
 }
+
+export type UseMythosConfig = ReturnType<typeof useMythosConfig>;

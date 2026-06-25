@@ -1,43 +1,46 @@
-import type { MythosConfig, AttnType } from "./config";
+/**
+ * Hand-authored mirror of `open_mythos/variants.py`. Values are copied
+ * verbatim from the Python factory functions. There is intentionally NO build
+ * step (per PLAN §3.8 / §8) — update this file manually when the Python
+ * variants change.
+ *
+ * `estimateParams` reconstructs the parameter breakdown from the same module
+ * shapes used in `open_mythos/main.py`. Counts are *estimates* of total (not
+ * activated) parameters and are labeled as such in the UI.
+ */
+
+import type { MythosConfig } from "./config";
+import { DEFAULT_CONFIG } from "./config";
 
 export type VariantId =
-  | "mythos_1b"
-  | "mythos_3b"
-  | "mythos_10b"
-  | "mythos_50b"
-  | "mythos_100b"
-  | "mythos_500b"
-  | "mythos_1t";
+  | "1b"
+  | "3b"
+  | "10b"
+  | "50b"
+  | "100b"
+  | "500b"
+  | "1t";
 
 export type Variant = {
   id: VariantId;
+  /** Display name, e.g. "Mythos 1B". */
   name: string;
+  /** Short description from the Python docstring. */
   blurb: string;
   config: MythosConfig;
 };
 
-export type ParamBreakdown = {
-  embedding: number;
-  preludeCoda: number;
-  recurrentCore: number;
-  moe: number;
-  total: number;
-};
-
-const base = (
-  config: Omit<MythosConfig, "max_output_tokens"> & { max_output_tokens?: number },
-): MythosConfig => ({
-  ...config,
-  max_output_tokens: config.max_output_tokens ?? 4096,
-});
+function cfg(overrides: Partial<MythosConfig>): MythosConfig {
+  return { ...DEFAULT_CONFIG, ...overrides };
+}
 
 export const VARIANTS: Variant[] = [
   {
-    id: "mythos_1b",
+    id: "1b",
     name: "Mythos 1B",
     blurb:
-      "Small research/fine-tuning model. dim=2048, 64 experts, 16 loop iters, 4k context.",
-    config: base({
+      "Small research / fine-tuning model. dim=2048, 64 experts, 16 loop iters, 4k context.",
+    config: cfg({
       vocab_size: 32000,
       dim: 2048,
       n_heads: 16,
@@ -57,16 +60,16 @@ export const VARIANTS: Variant[] = [
       n_experts_per_tok: 4,
       expert_dim: 2048,
       act_threshold: 0.99,
-      rope_theta: 500_000,
+      rope_theta: 500000.0,
       lora_rank: 8,
     }),
   },
   {
-    id: "mythos_3b",
+    id: "3b",
     name: "Mythos 3B",
     blurb:
       "Compact inference model. dim=3072, 64 experts, 16 loop iters, 4k context.",
-    config: base({
+    config: cfg({
       vocab_size: 32000,
       dim: 3072,
       n_heads: 24,
@@ -86,16 +89,16 @@ export const VARIANTS: Variant[] = [
       n_experts_per_tok: 4,
       expert_dim: 4096,
       act_threshold: 0.99,
-      rope_theta: 500_000,
+      rope_theta: 500000.0,
       lora_rank: 8,
     }),
   },
   {
-    id: "mythos_10b",
+    id: "10b",
     name: "Mythos 10B",
     blurb:
       "Mid-scale general model. dim=4096, 128 experts, 24 loop iters, 8k context.",
-    config: base({
+    config: cfg({
       vocab_size: 32000,
       dim: 4096,
       n_heads: 32,
@@ -115,16 +118,16 @@ export const VARIANTS: Variant[] = [
       n_experts_per_tok: 4,
       expert_dim: 5632,
       act_threshold: 0.99,
-      rope_theta: 500_000,
+      rope_theta: 500000.0,
       lora_rank: 16,
     }),
   },
   {
-    id: "mythos_50b",
+    id: "50b",
     name: "Mythos 50B",
     blurb:
       "Large reasoning model. dim=6144, 256 experts, 32 loop iters, 8k context.",
-    config: base({
+    config: cfg({
       vocab_size: 32000,
       dim: 6144,
       n_heads: 48,
@@ -144,21 +147,21 @@ export const VARIANTS: Variant[] = [
       n_experts_per_tok: 4,
       expert_dim: 9728,
       act_threshold: 0.99,
-      rope_theta: 500_000,
+      rope_theta: 500000.0,
       lora_rank: 32,
     }),
   },
   {
-    id: "mythos_100b",
+    id: "100b",
     name: "Mythos 100B",
     blurb:
       "Frontier-class model. dim=8192, 256 experts, 32 loop iters, 1M context, 128k output.",
-    config: base({
+    config: cfg({
       vocab_size: 32000,
       dim: 8192,
       n_heads: 64,
       n_kv_heads: 8,
-      max_seq_len: 1_000_000,
+      max_seq_len: 1000000,
       max_loop_iters: 32,
       prelude_layers: 4,
       coda_layers: 4,
@@ -173,22 +176,22 @@ export const VARIANTS: Variant[] = [
       n_experts_per_tok: 8,
       expert_dim: 13568,
       act_threshold: 0.99,
-      rope_theta: 1_000_000,
+      rope_theta: 1000000.0,
       lora_rank: 64,
-      max_output_tokens: 131_072,
+      max_output_tokens: 131072,
     }),
   },
   {
-    id: "mythos_500b",
+    id: "500b",
     name: "Mythos 500B",
     blurb:
       "Ultra-scale MoE model. dim=12288, 512 experts, 48 loop iters, 1M context, 128k output.",
-    config: base({
-      vocab_size: 100_000,
-      dim: 12_288,
+    config: cfg({
+      vocab_size: 100000,
+      dim: 12288,
       n_heads: 96,
       n_kv_heads: 16,
-      max_seq_len: 1_000_000,
+      max_seq_len: 1000000,
       max_loop_iters: 48,
       prelude_layers: 4,
       coda_layers: 4,
@@ -201,24 +204,24 @@ export const VARIANTS: Variant[] = [
       n_experts: 512,
       n_shared_experts: 8,
       n_experts_per_tok: 8,
-      expert_dim: 23_040,
+      expert_dim: 23040,
       act_threshold: 0.99,
-      rope_theta: 1_000_000,
+      rope_theta: 1000000.0,
       lora_rank: 128,
-      max_output_tokens: 131_072,
+      max_output_tokens: 131072,
     }),
   },
   {
-    id: "mythos_1t",
+    id: "1t",
     name: "Mythos 1T",
     blurb:
       "Maximum scale. dim=16384, 512 experts, 64 loop iters, 1M context, 128k output.",
-    config: base({
-      vocab_size: 100_000,
-      dim: 16_384,
+    config: cfg({
+      vocab_size: 100000,
+      dim: 16384,
       n_heads: 128,
       n_kv_heads: 16,
-      max_seq_len: 1_000_000,
+      max_seq_len: 1000000,
       max_loop_iters: 64,
       prelude_layers: 6,
       coda_layers: 6,
@@ -231,88 +234,110 @@ export const VARIANTS: Variant[] = [
       n_experts: 512,
       n_shared_experts: 8,
       n_experts_per_tok: 8,
-      expert_dim: 34_560,
+      expert_dim: 34560,
       act_threshold: 0.99,
-      rope_theta: 2_000_000,
+      rope_theta: 2000000.0,
       lora_rank: 256,
-      max_output_tokens: 131_072,
+      max_output_tokens: 131072,
     }),
   },
 ];
 
-const variantIds = VARIANTS.map((v) => v.id);
-
 export function getVariant(id: VariantId): Variant {
-  return VARIANTS.find((v) => v.id === id) ?? VARIANTS[0];
+  const v = VARIANTS.find((x) => x.id === id);
+  if (!v) throw new Error(`Unknown variant: ${id}`);
+  return v;
 }
 
-function mlaAttentionParams(c: MythosConfig): number {
-  const qOut = c.n_heads * (c.qk_nope_head_dim + c.qk_rope_head_dim);
-  const wq = c.dim * c.q_lora_rank + c.q_lora_rank * qOut;
-  const wkvDown = c.dim * (c.kv_lora_rank + c.qk_rope_head_dim);
-  const wkvUp =
-    c.kv_lora_rank * (c.n_heads * (c.qk_nope_head_dim + c.v_head_dim));
-  const wo = c.n_heads * c.v_head_dim * c.dim;
-  return wq + wkvDown + wkvUp + wo + 4 * c.dim;
+// ---------------------------------------------------------------------------
+// Parameter estimation (mirrors module shapes in open_mythos/main.py)
+// ---------------------------------------------------------------------------
+
+/** Linear weight param count (bias-free): in × out. */
+function linear(inDim: number, outDim: number): number {
+  return inDim * outDim;
 }
 
-function gqaAttentionParams(c: MythosConfig): number {
-  const headDim = c.dim / c.n_heads;
-  const wq = c.dim * c.dim;
-  const wk = c.dim * c.n_kv_heads * headDim;
-  const wv = c.dim * c.n_kv_heads * headDim;
-  const wo = c.dim * c.dim;
-  return wq + wk + wv + wo + 2 * c.dim;
+/** Attention parameter count for one block, per attn_type. */
+export function attnParams(c: MythosConfig): number {
+  if (c.attn_type === "mla") {
+    const qDown = linear(c.dim, c.q_lora_rank);
+    const qNorm = c.q_lora_rank;
+    const qUpNope = linear(c.q_lora_rank, c.n_heads * c.qk_nope_head_dim);
+    const qUpRope = linear(c.q_lora_rank, c.n_heads * c.qk_rope_head_dim);
+    const kvDown = linear(c.dim, c.kv_lora_rank + c.qk_rope_head_dim);
+    const kvNorm = c.kv_lora_rank;
+    const kvUp = linear(
+      c.kv_lora_rank,
+      c.n_heads * (c.qk_nope_head_dim + c.v_head_dim),
+    );
+    const wo = linear(c.n_heads * c.v_head_dim, c.dim);
+    return qDown + qNorm + qUpNope + qUpRope + kvDown + kvNorm + kvUp + wo;
+  }
+  // GQA
+  const headDim = Math.floor(c.dim / c.n_heads);
+  const wq = linear(c.dim, c.n_heads * headDim);
+  const wk = linear(c.dim, c.n_kv_heads * headDim);
+  const wv = linear(c.dim, c.n_kv_heads * headDim);
+  const wo = linear(c.n_heads * headDim, c.dim);
+  return wq + wk + wv + wo;
 }
 
-function denseBlockParams(c: MythosConfig): number {
-  const ffnDim = 4 * c.dim;
-  const ffn = 3 * c.dim * ffnDim;
-  const attn =
-    c.attn_type === "mla" ? mlaAttentionParams(c) : gqaAttentionParams(c);
-  return attn + ffn + 2 * c.dim;
+/** Dense SwiGLU FFN (prelude/coda) — Expert(dim, dim*4//3). */
+function denseFfnParams(c: MythosConfig): number {
+  const hidden = Math.floor((c.dim * 4) / 3);
+  return 3 * c.dim * hidden;
 }
 
-/**
- * Hand-maintained parameter estimates mirroring open_mythos/variants.py comments:
- *   total ≈ embed + prelude/coda + recurrent MLA + MoE
- *   MoE = 3·dim·expert_dim·(n_experts + n_shared·topk)
- */
+/** MoE FFN parameter count (recurrent block only). */
+export function moeParams(c: MythosConfig): number {
+  const router = linear(c.dim, c.n_experts);
+  const routed = c.n_experts * (3 * c.dim * c.expert_dim);
+  const shared =
+    c.n_shared_experts * (3 * c.dim * (c.expert_dim * c.n_experts_per_tok));
+  return router + routed + shared;
+}
+
+const blockNorms = (c: MythosConfig) => 2 * c.dim; // attn_norm + ffn_norm
+
+export type ParamBreakdown = {
+  embedding: number;
+  preludeCoda: number;
+  /** Recurrent block, everything except the MoE FFN (attn, norms, LTI/ACT/LoRA). */
+  recurrentCore: number;
+  moe: number;
+  total: number;
+};
+
 export function estimateParams(c: MythosConfig): ParamBreakdown {
-  const embedding = c.vocab_size * c.dim;
-  const preludeCoda =
-    denseBlockParams(c) * (c.prelude_layers + c.coda_layers);
-  const router = c.dim * c.n_experts;
-  const recurrentCore =
-    mlaAttentionParams(c) +
-    router +
-    3 * c.dim +
-    2 * c.lora_rank * c.dim;
-  const moe =
-    3 *
-    c.dim *
-    c.expert_dim *
-    (c.n_experts + c.n_shared_experts * c.n_experts_per_tok);
-  const total = embedding + preludeCoda + recurrentCore + moe;
+  const embedding = linear(c.vocab_size, c.dim); // tied with LM head → counted once
+
+  const oneDenseBlock = attnParams(c) + denseFfnParams(c) + blockNorms(c);
+  const preludeCoda = (c.prelude_layers + c.coda_layers) * oneDenseBlock;
+
+  const recurrentAttn = attnParams(c) + blockNorms(c);
+  const lti = 2 * c.dim + 1; // log_A (dim) + B (dim) + log_dt (1)
+  const act = c.dim + 1; // halt Linear(dim, 1)
+  const lora =
+    linear(c.dim, c.lora_rank) + // down
+    c.lora_rank * c.dim + // B
+    c.max_loop_iters * c.lora_rank; // per-loop scale embedding
+  const recurrentNorm = c.dim;
+  const recurrentCore = recurrentAttn + lti + act + lora + recurrentNorm;
+
+  const moe = moeParams(c);
+
+  const finalNorm = c.dim;
+  const total = embedding + preludeCoda + recurrentCore + moe + finalNorm;
+
   return { embedding, preludeCoda, recurrentCore, moe, total };
 }
 
+/** Human-readable parameter count, e.g. 1_234_567_890 → "1.23B". */
 export function formatParams(n: number): string {
-  if (n >= 1e12) {
-    return n % 1e12 === 0
-      ? `${n / 1e12}T`
-      : `${(n / 1e12).toFixed(2)}T`;
-  }
-  if (n >= 1e9) {
-    return n % 1e9 === 0 ? `${n / 1e9}B` : `${(n / 1e9).toFixed(1)}B`;
-  }
-  if (n >= 1e6) {
-    return n % 1e6 === 0 ? `${n / 1e6}M` : `${(n / 1e6).toFixed(1)}M`;
-  }
-  if (n >= 1e3) {
-    return n % 1e3 === 0 ? `${n / 1e3}K` : `${(n / 1e3).toFixed(1)}K`;
-  }
-  return `${Math.round(n)}`;
+  if (n >= 1e12) return `${(n / 1e12).toFixed(2)}T`;
+  if (n >= 1e9) return `${(n / 1e9).toFixed(2)}B`;
+  if (n >= 1e6) return `${(n / 1e6).toFixed(1)}M`;
+  if (n >= 1e3) return `${(n / 1e3).toFixed(1)}K`;
+  return `${n}`;
 }
-
-export const VARIANT_IDS = variantIds as [VariantId, ...VariantId[]];
