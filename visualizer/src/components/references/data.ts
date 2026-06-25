@@ -175,8 +175,6 @@ export const threads: Thread[] = [
   },
 ];
 
-export const repoUrl = "https://github.com/xboluna/OpenMythos";
-
 export const bibtex = `@software{gomez2026openmythos,
   author    = {Kye Gomez},
   title     = {OpenMythos: A Theoretical Reconstruction of the Claude Mythos Architecture},
