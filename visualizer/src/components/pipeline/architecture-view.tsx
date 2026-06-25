@@ -152,7 +152,7 @@ export function ArchitectureView() {
             </div>
           </div>
 
-          <aside className="space-y-4">
+          <aside className="space-y-4 lg:sticky lg:top-20 lg:self-start">
             <ConfigPanel fields={["variant", "loops"]} />
             <Legend />
           </aside>

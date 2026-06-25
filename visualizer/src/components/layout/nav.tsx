@@ -19,39 +19,46 @@ export function Nav() {
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="mx-auto flex h-14 max-w-7xl items-center justify-between px-4">
-        <Link href="/" className="flex items-center gap-2">
-          <span className="font-semibold tracking-tight">OpenMythos</span>
-          <Badge variant="secondary" className="font-mono text-xs">
-            Visualizer
-          </Badge>
-        </Link>
+      <div className="mx-auto grid h-14 max-w-7xl grid-cols-[1fr_auto_1fr] items-center px-4">
+        {/* Brand (left) */}
+        <div className="flex items-center justify-self-start">
+          <Link
+            href="/"
+            className="flex items-center gap-2 rounded-md px-1 py-1 transition-opacity hover:opacity-80"
+          >
+            <span className="font-semibold tracking-tight">OpenMythos</span>
+            <Badge variant="secondary" className="font-mono text-[10px]">
+              Visualizer
+            </Badge>
+          </Link>
+        </div>
 
-        <nav className="hidden items-center gap-1 md:flex">
+        {/* Centered nav links (lg+) */}
+        <nav className="hidden items-center gap-1 justify-self-center lg:flex">
           {routes.map((route) => (
             <Link
               key={route.href}
               href={route.href}
+              aria-current={isActive(route.href) ? "page" : undefined}
               className={cn(
-                "px-2 py-1 text-sm transition-colors hover:text-foreground",
+                "rounded-md px-3 py-1.5 text-sm font-medium transition-colors",
                 isActive(route.href)
-                  ? "font-medium text-foreground underline underline-offset-4"
-                  : "text-muted-foreground",
+                  ? "bg-muted text-foreground"
+                  : "text-muted-foreground hover:bg-muted/50 hover:text-foreground",
               )}
             >
               {route.label}
             </Link>
           ))}
-          <div className="ml-2">
-            <ThemeToggle />
-          </div>
         </nav>
 
-        <div className="flex items-center gap-1 md:hidden">
+        {/* Right cluster */}
+        <div className="flex items-center gap-1 justify-self-end">
           <ThemeToggle />
           <Button
             variant="ghost"
             size="icon"
+            className="lg:hidden"
             aria-label="Toggle menu"
             aria-expanded={open}
             onClick={() => setOpen((v) => !v)}
@@ -61,19 +68,21 @@ export function Nav() {
         </div>
       </div>
 
+      {/* Mobile / tablet menu */}
       {open ? (
-        <nav className="border-t border-border md:hidden">
-          <ul className="mx-auto flex max-w-7xl flex-col px-4 py-2">
+        <nav className="border-t border-border lg:hidden">
+          <ul className="mx-auto grid max-w-7xl grid-cols-2 gap-1 px-4 py-3 sm:grid-cols-3">
             {routes.map((route) => (
               <li key={route.href}>
                 <Link
                   href={route.href}
                   onClick={() => setOpen(false)}
+                  aria-current={isActive(route.href) ? "page" : undefined}
                   className={cn(
-                    "block py-2 text-sm transition-colors hover:text-foreground",
+                    "block rounded-md px-3 py-2 text-sm transition-colors",
                     isActive(route.href)
-                      ? "font-medium text-foreground"
-                      : "text-muted-foreground",
+                      ? "bg-muted font-medium text-foreground"
+                      : "text-muted-foreground hover:bg-muted/50 hover:text-foreground",
                   )}
                 >
                   {route.label}

@@ -234,7 +234,7 @@ export function MoEView() {
       </div>
 
       {/* Sidebar */}
-      <aside className="space-y-4 lg:sticky lg:top-6 lg:self-start">
+      <aside className="space-y-4 lg:sticky lg:top-20 lg:self-start">
         <ConfigPanel fields={["variant"]} />
         <div className="flex gap-2.5 rounded-xl border border-border bg-card/50 p-3 text-[11px] leading-relaxed text-muted-foreground">
           <Info className="mt-0.5 size-3.5 shrink-0" aria-hidden />

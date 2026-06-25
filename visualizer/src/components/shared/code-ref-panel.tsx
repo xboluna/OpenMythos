@@ -38,6 +38,7 @@ export function CodeRefPanel({
   const codeRef = React.useRef<HTMLDivElement>(null);
 
   const activeKey = (activeLines ?? []).join(",");
+  const didMountRef = React.useRef(false);
 
   React.useEffect(() => {
     const root = codeRef.current;
@@ -51,10 +52,14 @@ export function CodeRefPanel({
       el.setAttribute("data-active", isActive ? "true" : "false");
       if (isActive && !firstActive) firstActive = el;
     });
+    // Skip auto-scroll on the first run (page load / panel open) so arriving on
+    // a page never nudges anything — only scroll once the user changes steps.
+    const isFirstRun = !didMountRef.current;
+    didMountRef.current = true;
     // Scroll the active line into view WITHIN the panel's own scroll container
     // only — never via scrollIntoView, which would scroll the whole window and
     // make the viewport jump as the user steps through.
-    if (firstActive && open) {
+    if (firstActive && open && !isFirstRun) {
       const el = firstActive as HTMLElement;
       const cRect = root.getBoundingClientRect();
       const eRect = el.getBoundingClientRect();

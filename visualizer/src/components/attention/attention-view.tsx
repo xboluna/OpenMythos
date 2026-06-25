@@ -63,7 +63,7 @@ export function AttentionView() {
           </Card>
         </div>
 
-        <aside className="space-y-4 lg:sticky lg:top-6 lg:self-start">
+        <aside className="space-y-4 lg:sticky lg:top-20 lg:self-start">
           <ConfigPanel fields={["variant", "attn"]} />
           <p className="px-1 text-[11px] leading-relaxed text-muted-foreground">
             Change the variant to see every dimension on this page update live.
